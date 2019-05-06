@@ -1,0 +1,7 @@
+.UserInput {
+    margin: 16px;
+    border: 2px solid black !important;
+    background-color: #ccc;
+    text-align: center;
+    display: flex;
+}
