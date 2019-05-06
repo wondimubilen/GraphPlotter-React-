@@ -11,7 +11,7 @@ const userOutput = (props) => {
                 <div>
                     <h5>Start: {props.start}</h5>
                     <h5>End: {props.end}</h5>
-                </div> 
+                </div>
             </div>
         </div>
     );

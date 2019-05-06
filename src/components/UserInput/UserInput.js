@@ -7,9 +7,9 @@ const userInput = (props) => {
         border: '2px solid red'
     };
 
-    return <input className = "UserInput"
+    return <input className="UserInput"
         style={inputStyle}
-        onChange={props.changed} 
+        onChange={props.changed}
         value={props.currentFormula} />;
 };
 
