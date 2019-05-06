@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 
-class ChartBilen extends React.Component {
+class ChartCanvas extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -9,10 +9,7 @@ class ChartBilen extends React.Component {
         };
     }
 
-
     render() {
-        console.log('hi', this.state.data.chartData.datasets[0].data);
-
         return (
             <div className="chart">
                 <Line allowChartUpdate="true" oneToOne={true}
@@ -27,5 +24,5 @@ class ChartBilen extends React.Component {
     }
 }
 
-export default (ChartBilen);
+export default (ChartCanvas);
 

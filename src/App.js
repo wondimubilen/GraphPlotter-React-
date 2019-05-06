@@ -2,17 +2,11 @@ import React, { Component } from 'react';
 import './App.css';
 import MyCart from './components/Canvas/Chart';
 import math from 'mathjs';
-// import ReactDOM from 'react-dom';
-// import TeX from 'react-formula-beautifier';
 import UserInput from './components/UserInput/UserInput';
 import UserOutput from './components/UserOutput/UserOutput';
-
+// import TeX from 'react-formula-beautifier';
 
 class App extends Component {
-
-  // constructor(){
-  //   super();
-  // }
 
   state = {
     formula: 'x^2',
@@ -22,12 +16,14 @@ class App extends Component {
     coordinates: []
   }
 
-  switchDataHandler = (temp) => {
-    // console.log('after',temp);
-
+  componentWillMount() {
     this.getChartData();
-    //  console.log('after',this.state.data)
+  }
 
+  switchDataHandler = (temp) => {
+    this.getChartData();
+
+    // update state from user input 
     this.setState({
       formula: this.state.formula,
       start: this.state.start,
@@ -35,26 +31,39 @@ class App extends Component {
       data: this.state.data,
       coordinates: this.state.coordinates
     });
-    //  this.setState({ state: this.state });
-    console.log('i am clicked', this.state.coordinates);
   }
 
-  componentWillMount() {
-    this.getChartData();
+  generateDataPoints = (coordinatesList) => {
+    let start = this.state.start ? this.state.start : -10
+    let end = this.state.end ? this.state.end : 10
+
+    for (let i = start; i < end; i++) {
+      const algebraNode = math.parse(this.state.formula);
+      const algebraCode = algebraNode.compile();
+
+      let scope = {
+        x: i
+      }
+      const y = algebraCode.eval(scope);
+
+      // this doesn't work
+      this.setState({
+        coordinates: coordinatesList.push({ x: i, y: y }),
+      });
+    }
+    return coordinatesList;
   }
 
   getChartData = () => {
-
     var formula = this.state.formula;
     let coordinatesList = [];
     coordinatesList = this.generateDataPoints(coordinatesList);
-    console.log('coordinatesList', coordinatesList);
-
+    console.log('updated coordinates', coordinatesList);
     this.setState({
       data: {
         chartData: {
           datasets: [{
-            label: "My First dataset",
+            label: "Graphing Algebra ",
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: coordinatesList,
@@ -63,7 +72,7 @@ class App extends Component {
         chartOptions: {
           title: {
             display: true,
-            text: 'This is the First line graph',
+            text: 'Mathematical Formula Graph :' + formula,
             fontSize: 20,
             fontColor: 'black'
           },
@@ -97,52 +106,22 @@ class App extends Component {
     })
   }
 
-  truckFormulaInputChange = (e) => {
+  trackFormulaInputChange = (e) => {
     this.setState({
       formula: e.target.value,
     });
-    // console.log(this.state.formula);
   }
 
-  truckStartInputChange = (e) => {
+  trackStartInputChange = (e) => {
     this.setState({
       start: e.target.value,
     });
-    // console.log(this.state.start);
   }
 
-  truckEndInputChange = (e) => {
+  trackEndInputChange = (e) => {
     this.setState({
       end: e.target.value,
     });
-    // console.log(this.state.end);
-  }
-
-  generateDataPoints = (coordinatesList) => {
-    let start = this.state.start ? this.state.start : -10
-    let end = this.state.end ? this.state.end : 10
-    for (let index = start; index < end; index++) {
-      const temp = math.parse(this.state.formula);
-      // console.log('temp', temp);
-
-      const temp2 = temp.compile();
-      // console.log('temp compiled', temp2);
-
-      let scope = {
-        x: index
-      }
-      const y = temp2.eval(scope); // 9
-
-      coordinatesList.push({ x: index, y: y })
-    }
-    console.log('one: ', coordinatesList);
-
-    this.setState({
-      coordinates: coordinatesList,
-    });
-
-    console.log('state coordinate: ', this.state);
-    return coordinatesList;
   }
 
   render() {
@@ -158,37 +137,39 @@ class App extends Component {
       display: 'block'
 
     }
+
     return (
       <div id="chart" className="App">
-        <h2>Demo</h2>
         <MyCart data={this.state.data} oneToOne={true} ></MyCart>
-        <div className="App-input">
-          <h4> Please Insert One Variable Equation </h4>
-          <UserInput
-            changed={this.truckFormulaInputChange}
-            currentFormula={this.state.formula} />
+        <div className="App-wrapper">
+          <div className="App-input">
+            <h4> Please Insert One Variable Equation </h4>
+            <UserInput
+              changed={this.trackFormulaInputChange}
+              currentFormula={this.state.formula} />
+          </div>
+          <div className="App-input">
+            <h4> Please Insert X axis Start Point </h4>
+            <UserInput
+              changed={this.trackStartInputChange}
+              currentFormula={this.state.start} />
+          </div>
+
+          <div className="App-input">
+            <h4> Please Insert X axis End Point </h4>
+            <UserInput
+              changed={this.trackEndInputChange}
+              currentFormula={this.state.end} />
+          </div>
+
+          <button
+            style={style}
+            onClick={this.switchDataHandler.bind(this)}> CLICK ME</button>
         </div>
-        <div className="App-input">
-          <h4> Please Insert X axis Start Point </h4>
-          <UserInput
-            changed={this.truckStartInputChange}
-            currentFormula={this.state.start} />
+        <div>
+          <UserOutput formula={this.state.formula} start={this.state.start} end={this.state.end} />
+          {/* <TeX value={this.state.formula} />  TODO: react-formula-beautifier has a bug */}
         </div>
-        <div className="App-input">
-          <h4> Please Insert X axis End Point </h4>
-          <UserInput
-            changed={this.truckEndInputChange}
-            currentFormula={this.state.end} />
-        </div>
-
-        <button
-          style={style}
-          onClick={this.switchDataHandler.bind(this)}> CLICK ME</button>
-
-        <UserOutput formula={this.state.formula} start={this.state.start} end={this.state.end} />
-
-        {/* <TeX value={this.state.formula} /> */}
-
       </div>
     );
   }
