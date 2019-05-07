@@ -13,10 +13,16 @@
 
 .App-input {
   display: flex;
+  width: auto;
 }
 
 .App-wrapper{
   margin: 10px;
-  position: relative;
+  position: absolute;  
+  width: max-content;
+}
+
+.autocomplete__list li {
+  z-index: 100;
 }
 

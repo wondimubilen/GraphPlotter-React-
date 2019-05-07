@@ -8,9 +8,9 @@ const userOutput = (props) => {
             <h3>Formula: {props.formula}</h3>
             <div className="UserOutput container">
                 <h4 className="text">Range</h4>
-                <div>
-                    <h5>Start: {props.start}</h5>
-                    <h5>End: {props.end}</h5>
+                <div className="text-wrapper">
+                    <h5> <div> Start:</div>{props.start}</h5>
+                    <h5><div> End: </div>{props.end}</h5>
                 </div>
             </div>
         </div>

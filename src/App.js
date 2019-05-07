@@ -1,178 +1,173 @@
-import React, { Component } from 'react';
-import './App.css';
-import MyCart from './components/Canvas/Chart';
-import math from 'mathjs';
-import UserInput from './components/UserInput/UserInput';
-import UserOutput from './components/UserOutput/UserOutput';
+import React, { Component } from "react";
+import "./App.css";
+import MyCart from "./components/Canvas/Chart";
+import Histroy from "./components/History/History";
+import UserInput from "./components/UserInput/UserInput";
+import UserOutput from "./components/UserOutput/UserOutput";
 // import TeX from 'react-formula-beautifier';
 
-class App extends Component {
+const historicalData = [];
 
+class App extends Component {
   state = {
-    formula: 'x^2',
+    formula: "x^2",
     start: -10,
     end: 10,
-    data: {},
-    coordinates: []
-  }
+    finalFormula: "x^2",
+    finalStart: -10,
+    finalEnd: 10,
+    showHistory: false
+  };
 
-  componentWillMount() {
-    this.getChartData();
-  }
-
-  switchDataHandler = (temp) => {
-    this.getChartData();
-
-    // update state from user input 
+  switchDataHandler = () => {
+    // update state from user input
     this.setState({
+      finalFormula: this.state.formula,
+      finalStart: this.state.start,
+      finalEnd: this.state.end
+    });
+
+    const inputValues = {
       formula: this.state.formula,
       start: this.state.start,
-      end: this.state.end,
-      data: this.state.data,
-      coordinates: this.state.coordinates
-    });
-  }
+      end: this.state.end
+    };
 
-  generateDataPoints = (coordinatesList) => {
-    let start = this.state.start ? this.state.start : -10
-    let end = this.state.end ? this.state.end : 10
+    historicalData.push(inputValues);
+  };
 
-    for (let i = start; i < end; i++) {
-      const algebraNode = math.parse(this.state.formula);
-      const algebraCode = algebraNode.compile();
-
-      let scope = {
-        x: i
-      }
-      const y = algebraCode.eval(scope);
-
-      // this doesn't work
-      this.setState({
-        coordinates: coordinatesList.push({ x: i, y: y }),
-      });
-    }
-    return coordinatesList;
-  }
-
-  getChartData = () => {
-    var formula = this.state.formula;
-    let coordinatesList = [];
-    coordinatesList = this.generateDataPoints(coordinatesList);
-    console.log('updated coordinates', coordinatesList);
+  viewHistory = () => {
     this.setState({
-      data: {
-        chartData: {
-          datasets: [{
-            label: "Graphing Algebra ",
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
-            data: coordinatesList,
-          }]
-        },
-        chartOptions: {
-          title: {
-            display: true,
-            text: 'Mathematical Formula Graph :' + formula,
-            fontSize: 20,
-            fontColor: 'black'
-          },
-          scales: {
-            xAxes: [
-              {
-                type: 'linear',
-                ticks: {
-                  callback: function (label, index, labels) {
-                    return label;
-                  }
-                }
-              }
-            ],
-            yAxes: [
-              {
-                ticks: {
-                  callback: function (label, index, labels) {
-                    return label;
-                  },
-                  fontSize: 18,
-                  fontColor: 'black'
-                },
-                display: true,
-              }
-            ]
-          }
-        },
-      },
-      coordinates: coordinatesList
-    })
+      showHistory: true
+    });
+  };
+
+  editFormulaHandler=(index)=> {
+    const data = historicalData[index];
+
+    this.setState({
+      finalFormula: data.formula,
+      finalStart: data.start,
+      finalEnd: data.end
+    });
+
   }
 
-  trackFormulaInputChange = (e) => {
+  trackFormulaInputChange = e => {
     this.setState({
-      formula: e.target.value,
+      formula: e.target.value
     });
-  }
+  };
 
-  trackStartInputChange = (e) => {
+  trackStartInputChange = e => {
     this.setState({
-      start: e.target.value,
+      start: e.target.value
     });
-  }
+  };
 
-  trackEndInputChange = (e) => {
+  trackEndInputChange = e => {
     this.setState({
-      end: e.target.value,
+      end: e.target.value
     });
-  }
+  };
+
 
   render() {
-    const style = {
-      backgroundColor: '#2fc974',
-      padding: '20px 10px',
-      cursor: 'pointer',
-      border: '1px solid #666',
-      color: '#000',
-      borderRadius: '8px',
-      textAlign: 'center',
-      width: '250px',
-      display: 'block'
+    const plotStyle = {
+      backgroundColor: "#2fc974",
+      padding: "20px 10px",
+      cursor: "pointer",
+      border: "1px solid #666",
+      color: "#000",
+      borderRadius: "8px",
+      textAlign: "center",
+      width: "250px",
+      display: "block",
+      fontSize: "24px",
+      textTransform: "uppercase"
+    };
 
-    }
+    const historyStyle = {
+      backgroundColor: "##A9A9A9",
+      padding: "20px 10px",
+      cursor: "pointer",
+      border: "1px solid #666",
+      color: "#000",
+      borderRadius: "8px",
+      textAlign: "center",
+      width: "150px",
+      margin: '20px',
+      display: "block",
+      fontSize: "18px",
+      textTransform: "uppercase"
+    };
 
     return (
       <div id="chart" className="App">
-        <MyCart data={this.state.data} oneToOne={true} ></MyCart>
+        <MyCart
+          oneToOne={true}
+          formula={this.state.finalFormula}
+          start={this.state.finalStart}
+          end={this.state.finalEnd}
+        />
         <div className="App-wrapper">
           <div className="App-input">
             <h4> Please Insert One Variable Equation </h4>
             <UserInput
               changed={this.trackFormulaInputChange}
-              currentFormula={this.state.formula} />
+              currentFormula={this.state.formula}
+            />
           </div>
           <div className="App-input">
             <h4> Please Insert X axis Start Point </h4>
             <UserInput
               changed={this.trackStartInputChange}
-              currentFormula={this.state.start} />
+              currentFormula={this.state.start}
+            />
           </div>
 
           <div className="App-input">
             <h4> Please Insert X axis End Point </h4>
             <UserInput
               changed={this.trackEndInputChange}
-              currentFormula={this.state.end} />
+              currentFormula={this.state.end}
+            />
           </div>
 
-          <button
-            style={style}
-            onClick={this.switchDataHandler.bind(this)}> CLICK ME</button>
+          <button style={plotStyle} onClick={this.switchDataHandler.bind(this)}>
+            Plot
+          </button>
+
+          <button style={historyStyle} onClick={this.viewHistory}>
+            View History
+          </button>
+          <div>
+            <ol>
+            {this.state.showHistory &&
+              historicalData.map(function(d, idx) {
+                return (
+                  <li click={() => this.editFormulaHandler(idx)}>
+                    <Histroy
+                      key={idx}
+                      formula={d.formula}
+                      start={d.start}
+                      end={d.end}
+                    />
+                  </li>
+                );
+              })}
+            </ol>
+
+          </div>
         </div>
-        <div>
-          <UserOutput formula={this.state.formula} start={this.state.start} end={this.state.end} />
-          {/* <TeX value={this.state.formula} />  TODO: react-formula-beautifier has a bug */}
-        </div>
+        <UserOutput
+          formula={this.state.formula}
+          start={this.state.start}
+          end={this.state.end}
+        />
+        {/* <TeX value={this.state.formula} />  TODO: react-formula-beautifier has a bug */}
       </div>
     );
   }
-
 }
 export default App;
